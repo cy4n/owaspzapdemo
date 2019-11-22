@@ -20,7 +20,7 @@ public class VulnerableController {
     @GetMapping(path = "/foo")
     public String foo(HttpServletRequest request) {
         LOG.info(String.format("GET %s", request.getRequestURI()));
-        return "hallo";
+        return "password: 123";
     }
 
     @PostMapping(path = "/bar/{variable}")
@@ -34,7 +34,13 @@ public class VulnerableController {
     public ResponseEntity<StringResponse> baz(@RequestBody BazDto body,
                                               HttpServletRequest request) {
         LOG.info(String.format("POST %s - %s", request.getRequestURI(), body));
-        return new ResponseEntity<>(new StringResponse(body.toString()), HttpStatus.OK);
+        Boolean status;
+        if(body.getBaz().endsWith("AND 1=2 -- ")) {
+            status = false;
+        } else {
+            status = true;
+        }
+        return new ResponseEntity<>(new StringResponse(status.toString()), HttpStatus.OK);
     }
 
     @GetMapping(path = "/broken")
